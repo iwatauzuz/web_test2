@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCNA対策 問題演習サイト</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Tailwind gray-100 */
+        }
+        .quiz-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 0.75rem; /* Tailwind rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Tailwind shadow-lg */
+        }
+        .question-text {
+            font-size: 1.25rem; /* Tailwind text-xl */
+            font-weight: 600; /* Tailwind font-semibold */
+            margin-bottom: 1.5rem; /* Tailwind mb-6 */
+            color: #1f2937; /* Tailwind gray-800 */
+        }
+        .option-button {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 0.75rem 1.5rem; /* Tailwind py-3 px-6 */
+            margin-bottom: 0.75rem; /* Tailwind mb-3 */
+            border: 1px solid #d1d5db; /* Tailwind border-gray-300 */
+            border-radius: 0.5rem; /* Tailwind rounded-lg */
+            background-color: white;
+            color: #374151; /* Tailwind gray-700 */
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .option-button:hover {
+            background-color: #f9fafb; /* Tailwind gray-50 */
+            border-color: #9ca3af; /* Tailwind gray-400 */
+        }
+        .option-button.selected {
+            background-color: #3b82f6; /* Tailwind blue-500 */
+            color: white;
+            border-color: #3b82f6; /* Tailwind blue-500 */
+        }
+        .option-button.correct {
+            background-color: #10b981; /* Tailwind green-500 */
+            color: white;
+            border-color: #10b981; /* Tailwind green-500 */
+        }
+        .option-button.incorrect {
+            background-color: #ef4444; /* Tailwind red-500 */
+            color: white;
+            border-color: #ef4444; /* Tailwind red-500 */
+        }
+        .feedback-area {
+            margin-top: 1.5rem; /* Tailwind mt-6 */
+            padding: 1rem; /* Tailwind p-4 */
+            border-radius: 0.5rem; /* Tailwind rounded-lg */
+        }
+        .feedback-area.correct {
+            background-color: #d1fae5; /* Tailwind green-100 */
+            color: #065f46; /* Tailwind green-700 */
+        }
+        .feedback-area.incorrect {
+            background-color: #fee2e2; /* Tailwind red-100 */
+            color: #991b1b; /* Tailwind red-700 */
+        }
+        .explanation-text {
+            margin-top: 0.5rem; /* Tailwind mt-2 */
+            font-size: 0.875rem; /* Tailwind text-sm */
+        }
+        .action-button {
+            padding: 0.75rem 1.5rem; /* Tailwind py-3 px-6 */
+            border-radius: 0.5rem; /* Tailwind rounded-lg */
+            font-weight: 500; /* Tailwind font-medium */
+            transition: background-color 0.2s;
+        }
+        .action-button.primary {
+            background-color: #3b82f6; /* Tailwind blue-500 */
+            color: white;
+        }
+        .action-button.primary:hover {
+            background-color: #2563eb; /* Tailwind blue-600 */
+        }
+        .action-button.secondary {
+            background-color: #6b7280; /* Tailwind gray-500 */
+            color: white;
+        }
+        .action-button.secondary:hover {
+            background-color: #4b5563; /* Tailwind gray-600 */
+        }
+        .progress-bar-container {
+            width: 100%;
+            background-color: #e5e7eb; /* Tailwind gray-200 */
+            border-radius: 0.25rem; /* Tailwind rounded-md */
+            margin-bottom: 1rem; /* Tailwind mb-4 */
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 1rem; /* Tailwind h-4 */
+            background-color: #3b82f6; /* Tailwind blue-500 */
+            border-radius: 0.25rem; /* Tailwind rounded-md */
+            transition: width 0.3s ease-in-out;
+            text-align: center;
+            color: white;
+            font-size: 0.75rem; /* Tailwind text-xs */
+            line-height: 1rem; /* Tailwind leading-4 */
+        }
+        .score-display {
+            font-size: 1.125rem; /* Tailwind text-lg */
+            font-weight: 500; /* Tailwind font-medium */
+            margin-bottom: 1rem; /* Tailwind mb-4 */
+        }
+        /* メッセージボックスのスタイル */
+        .message-box-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .message-box-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .message-box-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            max-width: 90%;
+            width: 400px;
+        }
+        .message-box-content h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+        .message-box-content p {
+            margin-bottom: 1.5rem;
+            color: #4b5563;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="quiz-container">
+        <h1 class="text-3xl font-bold text-center mb-8 text-blue-600">CCNA対策 問題演習</h1>
+
+        <div id="quiz-area">
+            <div id="progress-info" class="flex justify-between items-center mb-2">
+                <span id="question-counter" class="text-sm text-gray-600"></span>
+                <span id="score-display" class="score-display text-blue-600">スコア: 0/0</span>
+            </div>
+            <div class="progress-bar-container">
+                <div id="progress-bar" class="progress-bar" style="width: 0%;">0%</div>
+            </div>
+
+            <div id="question-text" class="question-text"></div>
+            <div id="options-container">
+                </div>
+
+            <div id="feedback-area" class="feedback-area" style="display: none;">
+                <p id="feedback-text" class="font-semibold"></p>
+                <p id="explanation-text" class="explanation-text"></p>
+            </div>
+
+            <div class="mt-8 flex justify-between">
+                <button id="submit-button" class="action-button primary">回答する</button>
+                <button id="next-button" class="action-button secondary" style="display: none;">次の問題へ</button>
+            </div>
+        </div>
+
+        <div id="result-area" class="text-center" style="display: none;">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">演習終了！</h2>
+            <p id="final-score" class="text-xl mb-2 text-blue-600"></p>
+            <p id="final-message" class="text-lg mb-6 text-gray-700"></p>
+            <button id="restart-button" class="action-button primary">もう一度挑戦する</button>
+        </div>
+    </div>
+
+    <div id="custom-message-box-overlay" class="message-box-overlay">
+        <div class="message-box-content">
+            <h3 id="message-box-title">メッセージ</h3>
+            <p id="message-box-text"></p>
+            <button id="message-box-ok-button" class="action-button primary">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // --- クイズデータ ---
+        const quizData = [
+            {
+                question: "OSI参照モデルの第3層（ネットワーク層）で動作するプロトコルは次のうちどれですか？",
+                options: ["TCP", "IP", "HTTP", "Ethernet"],
+                answer: "IP",
+                explanation: "IP (Internet Protocol) は、OSI参照モデルのネットワーク層で動作し、データのルーティングを担当します。TCPはトランスポート層、HTTPはアプリケーション層、Ethernetはデータリンク層のプロトコルです。"
+            },
+            {
+                question: "プライベートIPアドレスの範囲として正しいものはどれですか？",
+                options: [
+                    "10.0.0.0 ～ 10.255.255.255",
+                    "172.16.0.0 ～ 172.32.255.255", // 誤り (正しくは172.31.255.255)
+                    "192.168.0.0 ～ 192.168.255.254", // 誤り (正しくは192.168.255.255)
+                    "224.0.0.0 ～ 239.255.255.255"
+                ],
+                answer: "10.0.0.0 ～ 10.255.255.255",
+                explanation: "プライベートIPアドレスの範囲は、クラスA: 10.0.0.0～10.255.255.255、クラスB: 172.16.0.0～172.31.255.255、クラスC: 192.168.0.0～192.168.255.255 です。"
+            },
+            {
+                question: "スイッチがMACアドレステーブルを学習する際に参照する情報はどれですか？",
+                options: ["宛先MACアドレス", "送信元MACアドレス", "宛先IPアドレス", "送信元IPアドレス"],
+                answer: "送信元MACアドレス",
+                explanation: "スイッチは、受信したフレームの送信元MACアドレスを見て、そのMACアドレスと受信ポートをMACアドレステーブルに学習します。"
+            },
+            {
+                question: "IPv6アドレスの長さは何ビットですか？",
+                options: ["32ビット", "64ビット", "128ビット", "256ビット"],
+                answer: "128ビット",
+                explanation: "IPv6アドレスは128ビットの長さで構成されており、IPv4の32ビットよりも大幅に多くのアドレス空間を提供します。"
+            },
+            {
+                question: "ルーティングプロトコル「OSPF」は何を基準に最適経路を決定しますか？",
+                options: ["ホップ数", "帯域幅", "コスト", "遅延"],
+                answer: "コスト",
+                explanation: "OSPF (Open Shortest Path First) は、各インターフェースに設定されたコスト値を基に、宛先ネットワークまでの合計コストが最も低い経路を最適経路として選択します。"
+            }
+            // ここにさらに問題を追加できます
+        ];
+
+        // --- DOM要素の取得 ---
+        const quizArea = document.getElementById('quiz-area');
+        const questionTextElement = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackArea = document.getElementById('feedback-area');
+        const feedbackTextElement = document.getElementById('feedback-text');
+        const explanationTextElement = document.getElementById('explanation-text');
+        const submitButton = document.getElementById('submit-button');
+        const nextButton = document.getElementById('next-button');
+        const resultArea = document.getElementById('result-area');
+        const finalScoreElement = document.getElementById('final-score');
+        const finalMessageElement = document.getElementById('final-message');
+        const restartButton = document.getElementById('restart-button');
+        const questionCounterElement = document.getElementById('question-counter');
+        const scoreDisplayElement = document.getElementById('score-display');
+        const progressBar = document.getElementById('progress-bar');
+
+        // カスタムメッセージボックス関連
+        const messageBoxOverlay = document.getElementById('custom-message-box-overlay');
+        const messageBoxTitle = document.getElementById('message-box-title');
+        const messageBoxText = document.getElementById('message-box-text');
+        const messageBoxOkButton = document.getElementById('message-box-ok-button');
+
+        // --- グローバル変数 ---
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedOptionButton = null; // 選択された選択肢ボタンを保持
+
+        // --- 初期化処理 ---
+        function initQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            shuffleQuizData(); // 問題をシャッフル
+            displayQuestion();
+            updateProgress();
+            resultArea.style.display = 'none';
+            quizArea.style.display = 'block';
+            submitButton.style.display = 'inline-block';
+            nextButton.style.display = 'none';
+            feedbackArea.style.display = 'none';
+        }
+
+        // --- 問題のシャッフル ---
+        function shuffleQuizData() {
+            for (let i = quizData.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [quizData[i], quizData[j]] = [quizData[j], quizData[i]];
+            }
+        }
+
+        // --- 問題の表示 ---
+        function displayQuestion() {
+            // 前回の選択肢ボタンをクリア
+            optionsContainer.innerHTML = '';
+            selectedOptionButton = null; // 選択状態をリセット
+
+            const currentQuestion = quizData[currentQuestionIndex];
+            questionTextElement.textContent = currentQuestion.question;
+
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-button');
+                button.addEventListener('click', () => selectOption(button, option));
+                optionsContainer.appendChild(button);
+            });
+
+            feedbackArea.style.display = 'none';
+            submitButton.disabled = true; // 初期状態では回答ボタンを無効化
+            submitButton.style.display = 'inline-block';
+            nextButton.style.display = 'none';
+            updateProgress();
+        }
+
+        // --- 選択肢の選択 ---
+        function selectOption(button, option) {
+            // 他の選択肢の選択状態を解除
+            if (selectedOptionButton) {
+                selectedOptionButton.classList.remove('selected');
+            }
+            // 今回クリックされたボタンを選択状態にする
+            button.classList.add('selected');
+            selectedOptionButton = button;
+            submitButton.disabled = false; // 選択肢が選ばれたら回答ボタンを有効化
+        }
+
+        // --- 回答の送信・正誤判定 ---
+        function handleSubmit() {
+            if (!selectedOptionButton) {
+                showCustomMessageBox("エラー", "選択肢を選んでください。");
+                return;
+            }
+
+            const currentQuestion = quizData[currentQuestionIndex];
+            const selectedAnswer = selectedOptionButton.textContent;
+
+            // 全ての選択肢ボタンを操作不可にする
+            Array.from(optionsContainer.children).forEach(btn => {
+                btn.disabled = true;
+                // 選択されていないボタンのホバー効果を消すため一時的にスタイル変更
+                if (!btn.classList.contains('selected')) {
+                    btn.style.borderColor = '#d1d5db'; // Tailwind border-gray-300
+                    btn.style.backgroundColor = 'white';
+                }
+            });
+
+
+            if (selectedAnswer === currentQuestion.answer) {
+                score++;
+                feedbackTextElement.textContent = '正解！';
+                feedbackArea.className = 'feedback-area correct'; // Tailwind CSSクラスを適用
+                selectedOptionButton.classList.add('correct');
+                selectedOptionButton.classList.remove('selected'); // 青色の選択状態は解除
+            } else {
+                feedbackTextElement.textContent = '不正解...';
+                feedbackArea.className = 'feedback-area incorrect'; // Tailwind CSSクラスを適用
+                selectedOptionButton.classList.add('incorrect');
+                selectedOptionButton.classList.remove('selected'); // 青色の選択状態は解除
+
+                // 正解の選択肢をハイライト
+                Array.from(optionsContainer.children).forEach(btn => {
+                    if (btn.textContent === currentQuestion.answer) {
+                        btn.classList.add('correct');
+                    }
+                });
+            }
+
+            explanationTextElement.textContent = `解説: ${currentQuestion.explanation}`;
+            feedbackArea.style.display = 'block';
+            submitButton.style.display = 'none';
+            nextButton.style.display = 'inline-block';
+            updateProgress(); // スコアを更新
+        }
+
+        // --- 次の問題へ ---
+        function handleNextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                displayQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        // --- 結果の表示 ---
+        function showResults() {
+            quizArea.style.display = 'none';
+            resultArea.style.display = 'block';
+            finalScoreElement.textContent = `あなたのスコア: ${score} / ${quizData.length}`;
+
+            let message = "";
+            const percentage = (score / quizData.length) * 100;
+            if (percentage === 100) {
+                message = "素晴らしい！全問正解です！🎉";
+            } else if (percentage >= 70) {
+                message = "よくできました！合格ラインです！👍";
+            } else if (percentage >= 50) {
+                message = "もう少し！復習して再挑戦しましょう。💪";
+            } else {
+                message = "残念...。基礎からしっかり復習しましょう。📖";
+            }
+            finalMessageElement.textContent = message;
+        }
+
+        // --- 進捗の更新 ---
+        function updateProgress() {
+            questionCounterElement.textContent = `問題 ${currentQuestionIndex + 1} / ${quizData.length}`;
+            scoreDisplayElement.textContent = `スコア: ${score}/${currentQuestionIndex}`; // 現在の問題数までのスコア
+            const progressPercentage = ((currentQuestionIndex) / quizData.length) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+            progressBar.textContent = `${Math.round(progressPercentage)}%`;
+
+            if (currentQuestionIndex === quizData.length) { // 全問終了時
+                 scoreDisplayElement.textContent = `スコア: ${score}/${quizData.length}`;
+                 progressBar.style.width = `100%`;
+                 progressBar.textContent = `100%`;
+            }
+        }
+
+        // --- カスタムメッセージボックス表示 ---
+        function showCustomMessageBox(title, text) {
+            messageBoxTitle.textContent = title;
+            messageBoxText.textContent = text;
+            messageBoxOverlay.classList.add('visible');
+        }
+
+        // --- カスタムメッセージボックス非表示 ---
+        function hideCustomMessageBox() {
+            messageBoxOverlay.classList.remove('visible');
+        }
+
+
+        // --- イベントリスナー ---
+        submitButton.addEventListener('click', handleSubmit);
+        nextButton.addEventListener('click', handleNextQuestion);
+        restartButton.addEventListener('click', initQuiz);
+        messageBoxOkButton.addEventListener('click', hideCustomMessageBox);
+
+        // --- クイズ開始 ---
+        window.onload = initQuiz;
+    </script>
+
+</body>
+</html>
