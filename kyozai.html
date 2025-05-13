@@ -3,39 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSI参照モデル解説スライドショー</title>
+    <title>OSI参照モデル解説スライドショー V2 (機能強化版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6; /* Tailwind gray-100 */
+            background-color: #f0f4f8; /* 少し明るい背景色 */
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            overflow: hidden; /* スライドショーのコンテナ外のスクロールを防ぐ */
+            overflow: hidden;
         }
         .slideshow-container {
             background-color: white;
-            width: 90%;
-            max-width: 900px;
-            height: 600px; /* 固定の高さを設定 */
-            border-radius: 0.75rem; /* Tailwind rounded-xl */
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* Tailwind shadow-xl */
+            width: 95%; /* 幅を少し広げる */
+            max-width: 1000px; /* 最大幅も広げる */
+            height: 700px; /* 高さを増やす */
+            border-radius: 0.75rem;
+            box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.15), 0 10px 15px -5px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
             position: relative;
-            overflow: hidden; /* スライド内のコンテンツがはみ出ないように */
+            overflow: hidden;
+        }
+        .slide-area {
+            width: 100%;
+            height: calc(100% - 70px); /* ナビゲーションの高さを調整 */
+            position: relative;
         }
         .slide {
             width: 100%;
-            height: calc(100% - 60px); /* ナビゲーション分を引いた高さ */
-            padding: 2rem;
-            display: flex; /* 常時flexで、表示制御はopacityとtransform */
-            pointer-events: none; /* デフォルトでは操作不可 */
-            z-index: 1; /* 非アクティブスライドのz-index */
+            height: 100%;
+            padding: 2.5rem; /* パディングを増やす */
+            display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -43,492 +47,573 @@
             position: absolute;
             top: 0;
             left: 0;
-            opacity: 0; /* デフォルトは非表示 (透明) */
-            transition: opacity 0.7s ease-in-out, transform 0.7s ease-in-out;
-            transform: translateX(100%); /* 初期位置を右外に */
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out; /* transformも追加 */
+            transform: translateX(20px); /* 少し右から入るアニメーション */
         }
         .slide.active {
-            opacity: 1; /* 表示 */
-            transform: translateX(0); /* アクティブなスライドは中央に */
-            pointer-events: auto; /* アクティブなスライドは操作可能に */
-            z-index: 2; /* アクティブスライドを最前面に */
+            display: flex;
+            opacity: 1;
+            transform: translateX(0);
+            z-index: 10;
         }
-        /* 左へ出ていくアニメーション用のクラス */
-        .slide.prev-transition {
-            transform: translateX(-100%);
-            opacity: 0; /* CSSトランジションで透明になる */
-            z-index: 1; /* active よりは後ろ */
+        .slide.exiting { /* 退出時のアニメーション用 */
+            opacity: 0;
+            transform: translateX(-20px); /* 少し左へ抜ける */
         }
+
         .slide h2 {
-            font-size: 2rem; /* Tailwind text-3xl */
-            font-weight: 700; /* Tailwind font-bold */
-            color: #1e40af; /* Tailwind blue-800 */
-            margin-bottom: 1rem;
+            font-size: 2.25rem; /* Tailwind text-4xl相当 */
+            font-weight: 700;
+            color: #1e3a8a; /* Tailwind blue-800より少し濃い */
+            margin-bottom: 1.5rem;
         }
         .slide h3 {
-            font-size: 1.5rem; /* Tailwind text-2xl */
-            font-weight: 600; /* Tailwind font-semibold */
+            font-size: 1.75rem; /* Tailwind text-3xl相当 */
+            font-weight: 600;
             color: #1d4ed8; /* Tailwind blue-700 */
             margin-bottom: 1.5rem;
         }
         .slide p {
-            font-size: 1rem; /* Tailwind text-base */
-            color: #374151; /* Tailwind gray-700 */
-            line-height: 1.6;
-            margin-bottom: 1rem;
-            max-width: 600px;
+            font-size: 1.1rem; /* Tailwind text-lg相当 */
+            color: #374151;
+            line-height: 1.7;
+            margin-bottom: 1.25rem;
+            max-width: 700px; /* 本文の最大幅を広げる */
         }
-        .slide .keywords {
-            font-size: 0.9rem;
-            color: #4b5563; /* Tailwind gray-600 */
-            background-color: #e5e7eb; /* Tailwind gray-200 */
-            padding: 0.5rem 1rem;
+        .slide .content-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 1.5rem;
+            align-items: center;
+            text-align: left;
+            width: 100%;
+            max-width: 750px;
+        }
+        .slide .content-grid .layer-icon-large {
+            font-size: 5rem; /* アイコンサイズ調整 */
+            padding: 1rem;
             border-radius: 0.5rem;
-            margin-top: 1rem;
+            background-color: #e0e7ff; /* Tailwind indigo-100 */
+        }
+
+        .slide .keywords {
+            font-size: 1rem;
+            color: #4b5563;
+            background-color: #e5e7eb;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            margin-top: 1.5rem;
             display: inline-block;
         }
         .slide .analogy {
             font-style: italic;
-            color: #166534; /* Tailwind green-700 */
-            background-color: #dcfce7; /* Tailwind green-100 */
-            padding: 0.75rem;
+            color: #065f46; /* Tailwind green-800 */
+            background-color: #d1fae5; /* Tailwind green-100 */
+            padding: 1rem;
             border-radius: 0.5rem;
-            margin-top: 1rem;
-            border-left: 4px solid #22c55e; /* Tailwind green-500 */
+            margin-top: 1.5rem;
+            border-left: 5px solid #10b981; /* Tailwind green-500 */
         }
-
         .navigation-controls {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 2rem;
-            background-color: #f9fafb; /* Tailwind gray-50 */
-            border-top: 1px solid #e5e7eb; /* Tailwind gray-200 */
+            padding: 1rem 2.5rem; /* パディング調整 */
+            background-color: #f8fafc; /* Tailwind slate-50 */
+            border-top: 1px solid #e2e8f0; /* Tailwind slate-200 */
             position: absolute;
             bottom: 0;
             width: 100%;
-            height: 60px; /* ナビゲーションの高さを固定 */
+            height: 70px; /* 高さ調整 */
+            z-index: 20;
         }
         .nav-button {
-            padding: 0.5rem 1.5rem;
-            background-color: #3b82f6; /* Tailwind blue-500 */
+            padding: 0.6rem 1.75rem; /* ボタンサイズ調整 */
+            background-color: #2563eb; /* Tailwind blue-600 */
             color: white;
             border: none;
-            border-radius: 0.5rem; /* Tailwind rounded-lg */
+            border-radius: 0.5rem;
             font-size: 1rem;
-            font-weight: 500; /* Tailwind font-medium */
+            font-weight: 500;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: background-color 0.2s, transform 0.1s;
         }
         .nav-button:hover {
-            background-color: #2563eb; /* Tailwind blue-600 */
+            background-color: #1d4ed8; /* Tailwind blue-700 */
+        }
+        .nav-button:active {
+            transform: translateY(1px);
         }
         .nav-button:disabled {
-            background-color: #9ca3af; /* Tailwind gray-400 */
+            background-color: #94a3b8; /* Tailwind slate-400 */
             cursor: not-allowed;
         }
         .slide-counter {
-            font-size: 0.9rem;
-            color: #4b5563; /* Tailwind gray-600 */
+            font-size: 1rem; /* 文字サイズ調整 */
+            color: #475569; /* Tailwind slate-600 */
         }
 
-        /* アニメーション用スタイル */
+        /* データフローアニメーション用 */
         .data-flow-animation {
-            width: 100%;
-            height: 250px;
-            position: relative;
-            margin-top: 1.5rem;
-            border: 1px solid #d1d5db; /* Tailwind gray-300 */
-            border-radius: 0.5rem;
-            overflow: hidden; /* パケットがはみ出ないように */
-            background-image: linear-gradient(45deg, #e5e7eb 25%, transparent 25%),
-                              linear-gradient(-45deg, #e5e7eb 25%, transparent 25%),
-                              linear-gradient(45deg, transparent 75%, #e5e7eb 75%),
-                              linear-gradient(-45deg, transparent 75%, #e5e7eb 75%);
-            background-size: 20px 20px;
-            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            width: 100%; max-width: 600px; height: 320px; position: relative;
+            margin-top: 1.5rem; border: 1px solid #d1d5db; border-radius: 0.5rem; overflow: hidden;
+            background-image: linear-gradient(45deg, #e9e9e9 25%, transparent 25%),
+                              linear-gradient(-45deg, #e9e9e9 25%, transparent 25%),
+                              linear-gradient(45deg, transparent 75%, #e9e9e9 75%),
+                              linear-gradient(-45deg, transparent 75%, #e9e9e9 75%);
+            background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
         }
         .layer-box-container {
-            display: flex;
-            justify-content: space-around;
-            width: 100%;
-            height: 100%;
-            position: absolute;
+            display: flex; justify-content: space-around; align-items: stretch;
+            width: 100%; height: 100%; position: absolute; padding: 10px 0;
         }
         .layer-stack {
-            display: flex;
-            flex-direction: column-reverse; /* 下から上に積む */
-            justify-content: space-around;
-            align-items: center;
-            height: 100%;
-            padding: 10px 0;
+            display: flex; flex-direction: column-reverse; justify-content: space-around;
+            align-items: center; width: 40%; height: 100%;
         }
         .layer-box {
-            font-size: 0.7rem;
-            padding: 2px 6px;
-            border: 1px solid;
-            border-radius: 4px;
-            margin: 2px 0;
-            width: 100px; /* 幅を固定 */
-            text-align: center;
-            background-color: white;
+            font-size: 0.75rem; padding: 4px 10px; border: 1px solid; border-radius: 4px;
+            width: 90%; max-width: 140px; text-align: center; background-color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         .packet {
-            width: 30px;
-            height: 20px;
-            background-color: #ef4444; /* Tailwind red-500 */
-            border-radius: 4px;
-            position: absolute;
-            transition: top 1s ease-in-out, left 1s ease-in-out, opacity 0.5s ease-in-out; /* opacityのtransition追加 */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-size: 0.7rem;
-            font-weight: bold;
-        }
-        .packet.sender {
-            /* 初期位置はJSで設定 */
-        }
-        .packet.receiver {
-            /* 初期位置はJSで設定 */
+            width: 45px; height: 30px; background-color: #ef4444; border: 1px solid #dc2626;
+            border-radius: 4px; position: absolute; transition: all 1s ease-in-out;
+            display: flex; justify-content: center; align-items: center;
+            color: white; font-size: 0.8rem; font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 5;
         }
 
-        /* 各層のアイコン（簡易的なもの） */
-        .layer-icon {
-            font-size: 3rem; /* Tailwind text-5xl */
-            margin-bottom: 1rem;
+        /* 問題スライド用スタイル */
+        .quiz-options { margin-top: 1.5rem; width: 100%; max-width: 600px; }
+        .quiz-option-button {
+            display: block; width: 100%; text-align: left;
+            padding: 0.75rem 1.5rem; margin-bottom: 0.75rem;
+            border: 2px solid #cbd5e1; /* Tailwind slate-300 */
+            border-radius: 0.5rem; background-color: white;
+            color: #334155; /* Tailwind slate-700 */
+            transition: all 0.2s; font-size: 1rem;
         }
-        .icon-app { color: #ea580c; } /* Tailwind orange-600 */
-        .icon-pres { color: #ca8a04; } /* Tailwind yellow-600 */
-        .icon-sess { color: #65a30d; } /* Tailwind lime-600 */
-        .icon-trans { color: #059669; } /* Tailwind emerald-600 */
-        .icon-net { color: #0891b2; } /* Tailwind cyan-600 */
-        .icon-data { color: #0284c7; } /* Tailwind sky-600 */
-        .icon-phys { color: #4f46e5; } /* Tailwind indigo-600 */
+        .quiz-option-button:hover {
+            border-color: #3b82f6; /* Tailwind blue-500 */
+            background-color: #eff6ff; /* Tailwind blue-50 */
+        }
+        .quiz-option-button.selected {
+            background-color: #3b82f6; color: white; border-color: #3b82f6;
+        }
+        .quiz-option-button.correct {
+            background-color: #22c55e; color: white; border-color: #22c55e; /* Tailwind green-500 */
+        }
+        .quiz-option-button.incorrect {
+            background-color: #ef4444; color: white; border-color: #ef4444; /* Tailwind red-500 */
+        }
+        .quiz-feedback {
+            margin-top: 1.5rem; padding: 1rem; border-radius: 0.5rem;
+            width: 100%; max-width: 600px; text-align: left;
+        }
+        .quiz-feedback.correct { background-color: #d1fae5; color: #065f46; }
+        .quiz-feedback.incorrect { background-color: #fee2e2; color: #991b1b; }
+        .quiz-explanation { margin-top: 0.5rem; font-size: 0.95rem; }
+        .quiz-action-button { margin-top: 1rem; }
 
+        /* Font Awesome アイコンの色 */
+        .fa-solid { transition: color 0.3s; }
+        .icon-app { color: #f97316; } /* orange-500 */
+        .icon-pres { color: #eab308; } /* yellow-500 */
+        .icon-sess { color: #84cc16; } /* lime-500 */
+        .icon-trans { color: #10b981; } /* emerald-500 */
+        .icon-net { color: #06b6d4; } /* cyan-500 */
+        .icon-data { color: #3b82f6; } /* blue-500 */
+        .icon-phys { color: #6366f1; } /* indigo-500 */
+        .icon-summary { color: #7c3aed; } /* violet-600 */
+        .icon-quiz { color: #db2777; } /* pink-600 */
     </style>
 </head>
 <body>
     <div class="slideshow-container">
-        <div id="slide-content-area"></div>
+        <div id="slide-area" class="slide-area">
+            </div>
 
         <div class="navigation-controls">
             <button id="prev-button" class="nav-button">戻る</button>
-            <span id="slide-counter" class="slide-counter"></span>
+            <span id="slide-counter" class="slide-counter">1 / N</span>
             <button id="next-button" class="nav-button">次へ</button>
         </div>
     </div>
 
     <script>
-        // DEBUG: ブラウザのコンソールでエラーメッセージが出ていないか確認してください。
-        console.log("Slideshow script started.");
-
         const slidesData = [
-            {
+            { // 0
                 title: "OSI参照モデルへようこそ！",
+                type: "intro",
                 content: `
-                    <p>OSI参照モデルは、コンピュータネットワークの機能を7つの階層に分けて定義したものです。</p>
-                    <p>これにより、異なるメーカーの機器同士でも通信できるようになります。各層は特定の役割を担い、隣接する層と連携して動作します。</p>
-                    <p class="mt-4">このスライドショーで、各層の役割を一緒に見ていきましょう！</p>
-                    <div class="layer-icon mt-6">🌐</div>
+                    <p class="text-xl">ネットワークの基礎となるOSI参照モデルについて、一緒に学んでいきましょう。</p>
+                    <p>このモデルは、複雑なネットワーク通信を7つの階層（レイヤ）に分けて理解しやすくするためのものです。各層がどのように連携し、私たちのデータがインターネットを旅するのかを探求します。</p>
+                    <i class="fas fa-network-wired fa-4x mt-8 text-blue-500"></i>
                 `
             },
-            {
+            { // 1
                 title: "第7層: アプリケーション層",
                 layerName: "Application Layer",
-                icon: "💻",
-                iconClass: "icon-app",
-                description: "ユーザーが直接操作するアプリケーションやサービスに最も近い層です。ファイル転送、メール、ウェブ閲覧などの機能を提供します。",
-                protocols: "HTTP, FTP, SMTP, DNS, Telnet",
-                analogy: "例えるなら、あなたが使う「ソフトウェアの顔」。ウェブブラウザやメールソフトがこれにあたります。"
+                icon: "fas fa-desktop", iconClass: "icon-app",
+                description: "ユーザーが直接触れるアプリケーションにネットワークサービスを提供します。私たちが日常的に使うメールソフト、ウェブブラウザ、ファイル転送ソフトなどがこの層で動作し、それぞれの目的に応じた通信プロトコルを利用します。",
+                details: "例えば、ウェブサイトを見るときはHTTP/HTTPS、メールを送受信する際はSMTP/POP3/IMAP、ファイルを転送する際はFTPといったプロトコルが使われます。DNSによる名前解決もこの層の重要な機能です。",
+                protocols: "HTTP, HTTPS, FTP, SMTP, POP3, IMAP, DNS, Telnet",
+                analogy: "「受付窓口」：ユーザーの要求を受け付け、適切なサービス（プロトコル）へ案内します。"
             },
-            {
+            { // 2
                 title: "第6層: プレゼンテーション層",
                 layerName: "Presentation Layer",
-                icon: "🎨",
-                iconClass: "icon-pres",
-                description: "データの表現形式を管理します。文字コードの変換、データの暗号化・復号化、圧縮・解凍などを行います。",
-                protocols: "SSL/TLS, JPEG, GIF, ASCII, EBCDIC",
-                analogy: "例えるなら、「翻訳家兼フォーマッター」。相手にわかる言葉や形にデータを整えます。"
+                icon: "fas fa-palette", iconClass: "icon-pres",
+                description: "アプリケーション層間でやり取りされるデータの表現形式を統一します。これにより、異なるシステム間でもデータ交換が可能になります。",
+                details: "主な役割は、文字コードの変換（例: ASCIIからEBCDICへ）、データの暗号化と復号化（例: SSL/TLSの一部機能）、データの圧縮と解凍です。これにより、通信のセキュリティ向上や効率化が図られます。",
+                protocols: "SSL/TLS, JPEG, GIF, PNG, ASCII, EBCDIC, MIME",
+                analogy: "「翻訳家・通訳家」：異なる言語や形式で書かれた情報を、相手が理解できる形に整えます。"
             },
-            {
+            { // 3
                 title: "第5層: セッション層",
                 layerName: "Session Layer",
-                icon: "🤝",
-                iconClass: "icon-sess",
-                description: "通信の開始から終了までの一連の流れ（セッション）を管理します。同期を取り、データの送受信のタイミングなどを制御します。",
-                protocols: "NetBIOS, RPC, PPTP",
-                analogy: "例えるなら、「会話の管理人」。通信の開始、途中での確認、終了の合図などを担当します。"
+                icon: "fas fa-handshake", iconClass: "icon-sess",
+                description: "アプリケーション間の通信セッションの確立、維持、終了を管理します。対話の同期を取り、データ転送の順序やタイミングを制御します。",
+                details: "例えば、複数のプロセスが同時に通信を行う際、それぞれの通信が混線しないようにセッションを管理します。また、大規模なデータ転送中に通信が途切れた場合、どこまでデータが送られたかを記録し（同期点）、再開時にその地点から始められるようにする機能も持ちます。",
+                protocols: "NetBIOS, RPC, PPTP, Sockets API (一部)",
+                analogy: "「会議の司会者」：会話の開始と終了を宣言し、発言のタイミングや順番を調整します。"
             },
-            {
+            { // 4
                 title: "第4層: トランスポート層",
                 layerName: "Transport Layer",
-                icon: "🚚",
-                iconClass: "icon-trans",
-                description: "データの信頼性や効率的な転送を保証します。エラー訂正や再送制御、コネクションの確立などを行います。ポート番号でアプリケーションを識別します。",
-                protocols: "TCP, UDP",
-                analogy: "例えるなら、「配送業者」。荷物（データ）を確実に、または素早く相手の窓口（ポート）まで届けます。"
+                icon: "fas fa-truck-fast", iconClass: "icon-trans",
+                description: "エンドツーエンドのデータ転送における信頼性とフロー制御を提供します。送信元から宛先までの確実なデータ到達を保証する役割を担います。",
+                details: "代表的なプロトコルはTCPとUDPです。TCPはコネクション指向で信頼性の高い通信（エラー検出、再送制御、順序制御）を提供し、UDPはコネクションレスで高速性を重視した通信（信頼性より速度優先）を提供します。ポート番号を使って、どのアプリケーション宛のデータかを識別します。",
+                protocols: "TCP, UDP, ポート番号",
+                analogy: "「郵便局の仕分け・配送担当」：荷物（データ）を確実に、または迅速に、正しい宛先の窓口（ポート）へ届けます。"
             },
-            {
+            { // 5
                 title: "第3層: ネットワーク層",
                 layerName: "Network Layer",
-                icon: "🗺️",
-                iconClass: "icon-net",
-                description: "異なるネットワーク間のデータ転送（ルーティング）を担当します。IPアドレスを使って宛先を特定し、最適な経路を選択します。",
-                protocols: "IP (IPv4, IPv6), ICMP, ARP, RIP, OSPF",
-                analogy: "例えるなら、「郵便配達のルートプランナー」。住所（IPアドレス）を見て、最適な道順で手紙（データ）を届けます。"
+                icon: "fas fa-route", iconClass: "icon-net",
+                description: "異なるネットワーク間でのデータパケットの経路選択（ルーティング）と転送を担当します。IPアドレスを用いて通信相手を特定します。",
+                details: "ルータがこの層で動作し、IPアドレスに基づいて最適な経路を決定し、パケットを次のネットワークへ中継します。代表的なプロトコルはIPで、IPv4とIPv6があります。ICMP（エラー通知や診断）やARP（IPアドレスからMACアドレス解決）も関連します。",
+                protocols: "IP (IPv4, IPv6), ICMP, ARP, RIP, OSPF, BGP",
+                analogy: "「旅行代理店のルートプランナー」：目的地（IPアドレス）までの最適な道順（経路）を計画し、案内します。"
             },
-            {
+            { // 6
                 title: "第2層: データリンク層",
                 layerName: "Data Link Layer",
-                icon: "�",
-                iconClass: "icon-data",
-                description: "直接接続された機器間のデータ転送を制御します。MACアドレスを使って通信相手を識別し、エラー検出も行います。",
-                protocols: "Ethernet, Wi-Fi, PPP, MACアドレス, フレーム",
-                analogy: "例えるなら、「隣同士の直接会話」。すぐ隣の機器に確実にデータを渡す役割です。"
+                icon: "fas fa-link", iconClass: "icon-data",
+                description: "同一ネットワーク内の直接接続された機器間で、信頼性のあるデータ転送（フレームの送受信）を実現します。物理的なエラーの検出と訂正（一部）も行います。",
+                details: "MACアドレス（物理アドレス）を使って通信相手を識別します。スイッチやブリッジがこの層で動作します。イーサネットやWi-Fiなどが代表的な技術です。データは「フレーム」という単位で扱われます。",
+                protocols: "Ethernet (IEEE 802.3), Wi-Fi (IEEE 802.11), PPP, MACアドレス, フレーム",
+                analogy: "「隣人との直接の手紙交換」：すぐ隣の家に、間違いなく手紙（フレーム）を届けます。"
             },
-            {
+            { // 7
                 title: "第1層: 物理層",
                 layerName: "Physical Layer",
-                icon: "🔌",
-                iconClass: "icon-phys",
-                description: "データを電気信号や光信号に変換し、ケーブルなどの物理的な媒体を通じて伝送します。ビット単位でデータを扱います。",
-                protocols: "イーサネットケーブル, 光ファイバー, ハブ, リピータ, RS-232C",
-                analogy: "例えるなら、「電気信号が通る道そのもの」。ケーブルやコネクタ、電圧のレベルなどを定義します。"
+                icon: "fas fa-plug-circle-bolt", iconClass: "icon-phys",
+                description: "データを電気信号、光信号、または電波に変換し、物理的な伝送媒体（ケーブル、光ファイバー、無線など）を通じてビットストリームを転送します。",
+                details: "ケーブルの種類（ツイストペア、同軸、光ファイバー）、コネクタの形状、電圧レベル、変調方式などが規定されます。ハブやリピータがこの層で動作します。データの意味は解釈せず、単に0と1のビット列を伝送する役割に徹します。",
+                protocols: "イーサネットケーブル (RJ-45), 光ファイバー, USB, Bluetooth (物理層部分), RS-232C",
+                analogy: "「道路や電線そのもの」：データが通るための物理的な道筋と、その通行ルールを定めます。"
             },
-            {
+            { // 8
                 title: "OSI参照モデル まとめ",
+                type: "summary",
+                icon: "fas fa-layer-group", iconClass: "icon-summary",
                 content: `
-                    <p>各層が連携することで、複雑なネットワーク通信が実現されます。</p>
-                    <p>送信側ではデータが第7層から第1層へと加工され、受信側では第1層から第7層へと元に戻されていきます。</p>
+                    <p>OSI参照モデルは、ネットワーク通信の複雑なプロセスを7つの階層に分割し、各層の役割を明確にしています。</p>
+                    <p>送信側では、データはアプリケーション層から物理層へと順に加工され（<strong>カプセル化</strong>）、各層でヘッダ情報が付加されます。受信側では、物理層からアプリケーション層へとデータが渡され、各層でヘッダ情報が取り除かれて元のデータが復元されます（<strong>非カプセル化</strong>）。</p>
                     <div class="data-flow-animation" id="data-flow-animation-container">
                         <div class="layer-box-container">
-                            <div class="layer-stack" id="sender-stack"> </div>
-                            <div class="layer-stack" id="receiver-stack"> </div>
+                            <div class="layer-stack" id="sender-stack"></div>
+                            <div class="layer-stack" id="receiver-stack"></div>
                         </div>
-                        <div class="packet sender" id="packet-sender">Data</div>
-                        <div class="packet receiver" id="packet-receiver" style="opacity:0;">Data</div>
+                        <div class="packet" id="packet-animation" style="opacity:0;">Data</div>
                     </div>
-                    <button id="play-animation-button" class="nav-button mt-4">アニメーション再生</button>
+                    <button id="play-animation-button" class="nav-button quiz-action-button">データフローアニメーション再生</button>
+                    <p class="mt-6">この階層化されたアプローチにより、技術の標準化、相互運用性の確保、トラブルシューティングの容易化などが実現されます。</p>
                 `
+            },
+            { // 9 - Quiz 1
+                title: "CCNA想定問題 1",
+                type: "quiz",
+                icon: "fas fa-question-circle", iconClass: "icon-quiz",
+                question: "OSI参照モデルにおいて、IPアドレスを使用してエンドツーエンドのルーティングを行う層はどれですか？",
+                options: [
+                    "物理層",
+                    "データリンク層",
+                    "ネットワーク層",
+                    "トランスポート層"
+                ],
+                answer: "ネットワーク層",
+                explanation: "ネットワーク層（第3層）は、IPアドレスに基づいてパケットの経路選択（ルーティング）を行い、異なるネットワーク間の通信を実現します。データリンク層はMACアドレス、トランスポート層はポート番号を使用します。"
+            },
+            { // 10 - Quiz 2
+                title: "CCNA想定問題 2",
+                type: "quiz",
+                icon: "fas fa-question-circle", iconClass: "icon-quiz",
+                question: "TCPプロトコルが主に動作するOSI参照モデルの層はどれですか？",
+                options: [
+                    "アプリケーション層",
+                    "セッション層",
+                    "トランスポート層",
+                    "ネットワーク層"
+                ],
+                answer: "トランスポート層",
+                explanation: "TCP (Transmission Control Protocol) は、トランスポート層（第4層）で動作し、信頼性の高いコネクション指向の通信を提供します。エラー訂正や再送制御などの機能があります。"
+            },
+            { // 11 - Quiz 3
+                title: "CCNA想定問題 3",
+                type: "quiz",
+                icon: "fas fa-question-circle", iconClass: "icon-quiz",
+                question: "データの暗号化や文字コードの変換を行う役割を持つOSI参照モデルの層はどれですか？",
+                options: [
+                    "アプリケーション層",
+                    "プレゼンテーション層",
+                    "セッション層",
+                    "トランスポート層"
+                ],
+                answer: "プレゼンテーション層",
+                explanation: "プレゼンテーション層（第6層）は、データの表現形式を統一する役割を持ち、暗号化、復号化、圧縮、文字コード変換などを行います。"
             }
         ];
 
-        const slideContentArea = document.getElementById('slide-content-area');
+        const slideArea = document.getElementById('slide-area');
         const prevButton = document.getElementById('prev-button');
         const nextButton = document.getElementById('next-button');
         const slideCounterElement = document.getElementById('slide-counter');
 
-        let currentSlideIndex = 0; // 初期スライドインデックス
-        let slides = []; // スライド要素を格納する配列
+        let currentSlideIndex = 0;
+        let slideElements = [];
+        let selectedOptionButton = null; // クイズ用
 
-        function createSlideDOM(slideData, index) {
+        function createSlideElement(slideData, index) {
             const slideDiv = document.createElement('div');
             slideDiv.classList.add('slide');
             slideDiv.id = `slide-${index}`;
 
-            let innerHTML = `<h2>${slideData.title}</h2>`;
-            if (slideData.layerName) {
-                innerHTML += `<div class="layer-icon ${slideData.iconClass || ''}">${slideData.icon || '❓'}</div>`;
-                innerHTML += `<h3>${slideData.layerName}</h3>`;
-                innerHTML += `<p>${slideData.description}</p>`;
-                innerHTML += `<p class="keywords"><strong>主なプロトコル/技術:</strong> ${slideData.protocols}</p>`;
-                innerHTML += `<p class="analogy">${slideData.analogy}</p>`;
-            } else if (slideData.content) {
+            let innerHTML = `<h2><i class="${slideData.icon || 'fas fa-info-circle'} ${slideData.iconClass || ''} mr-3"></i>${slideData.title}</h2>`;
+
+            if (slideData.type === "quiz") {
+                innerHTML += `<p class="text-lg font-medium mb-4">${slideData.question}</p>`;
+                innerHTML += `<div class="quiz-options">`;
+                slideData.options.forEach(option => {
+                    innerHTML += `<button class="quiz-option-button">${option}</button>`;
+                });
+                innerHTML += `</div>`;
+                innerHTML += `<button id="submit-quiz-button-${index}" class="nav-button quiz-action-button" disabled>回答する</button>`;
+                innerHTML += `<div id="quiz-feedback-${index}" class="quiz-feedback" style="display: none;"></div>`;
+
+            } else if (slideData.layerName) { // 通常のレイヤ説明スライド
+                 innerHTML += `
+                    <div class="content-grid">
+                        <div class="layer-icon-large ${slideData.iconClass || ''}"><i class="${slideData.icon}"></i></div>
+                        <div>
+                            <h3 class="text-left">${slideData.layerName}</h3>
+                            <p class="text-left">${slideData.description}</p>
+                        </div>
+                    </div>`;
+                if (slideData.details) {
+                    innerHTML += `<p class="text-left mt-4 text-gray-600 text-base">${slideData.details}</p>`;
+                }
+                if (slideData.protocols) {
+                    innerHTML += `<p class="keywords"><strong>主なPDU/技術:</strong> ${slideData.protocols}</p>`;
+                }
+                if (slideData.analogy) {
+                    innerHTML += `<p class="analogy"><i class="fas fa-lightbulb mr-2"></i>${slideData.analogy}</p>`;
+                }
+            } else { // イントロ、まとめスライド
                 innerHTML += slideData.content;
             }
             slideDiv.innerHTML = innerHTML;
             return slideDiv;
         }
 
-        function showSlide(index) {
-            console.log(`Attempting to show slide: ${index}, current actual index: ${currentSlideIndex}`);
-            const oldIndex = currentSlideIndex;
-
-            if (index < 0 || index >= slides.length || (index === oldIndex && slides[index] && slides[index].classList.contains('active'))) {
-                console.log("Show slide condition not met or slide already active.");
-                return;
+        function showSlide(index, direction = 'next') {
+            const oldSlide = slideElements[currentSlideIndex];
+            if (oldSlide) {
+                oldSlide.classList.add('exiting'); // 退出アニメーションクラス
+                // アニメーション終了後にactiveを外す
+                setTimeout(() => {
+                    oldSlide.classList.remove('active', 'exiting');
+                }, 600); // CSSのtransition時間と合わせる
             }
 
-            slides.forEach((slide, i) => {
-                slide.classList.remove('active', 'prev-transition');
-                if (i === oldIndex) {
-                    if (index > oldIndex) {
-                        slide.classList.add('prev-transition');
-                         console.log(`Slide ${i} (old) is transitioning out left.`);
-                    } else {
-                        // For "back", the old slide (now to the right) fades out via default .slide styles
-                        console.log(`Slide ${i} (old) is transitioning out right (default).`);
+            if (slideElements[index]) {
+                const newSlide = slideElements[index];
+                // 新しいスライドの初期アニメーション位置を設定
+                if (direction === 'next') {
+                    newSlide.style.transform = 'translateX(20px)';
+                } else {
+                    newSlide.style.transform = 'translateX(-20px)';
+                }
+                newSlide.style.opacity = '0'; // 一旦透明に
+
+                // 少し遅れてactiveクラスを追加してアニメーション開始
+                setTimeout(() => {
+                    newSlide.classList.add('active');
+                }, 50); // 50msのディレイでスムーズに
+
+                currentSlideIndex = index;
+                updateNavigation();
+                resetQuizState(index); // クイズの状態をリセット
+
+                if (slidesData[index].type === "summary") {
+                    setupDataFlowAnimation();
+                    const playButton = document.getElementById('play-animation-button');
+                    if (playButton) {
+                        playButton.onclick = playDataFlowAnimation;
+                        playButton.disabled = false;
                     }
+                    const packet = document.getElementById('packet-animation');
+                    if (packet) packet.style.opacity = '0';
+                } else if (slidesData[index].type === "quiz") {
+                    attachQuizEventListeners(index);
                 }
-            });
+            }
+        }
+        
+        function resetQuizState(slideIndex) {
+            const slideData = slidesData[slideIndex];
+            if (slideData.type !== "quiz") return;
 
-            if (slides[index]) {
-                console.log(`Preparing to show new slide: ${index}`);
-                if (index < oldIndex) { // Moving backward
-                    slides[index].style.transform = 'translateX(-100%)';
-                    console.log(`New slide ${index} set to translateX(-100%)`);
-                } else { // Moving forward or initial load
-                    slides[index].style.transform = 'translateX(100%)';
-                    console.log(`New slide ${index} set to translateX(100%)`);
-                }
+            const optionsContainer = slideElements[slideIndex].querySelector('.quiz-options');
+            if (optionsContainer) {
+                 Array.from(optionsContainer.children).forEach(btn => {
+                    btn.classList.remove('selected', 'correct', 'incorrect');
+                    btn.disabled = false;
+                });
+            }
 
-                // Force reflow might help ensure the transform is applied before transition starts
-                // slides[index].offsetHeight; 
+            const submitButton = document.getElementById(`submit-quiz-button-${slideIndex}`);
+            if (submitButton) submitButton.disabled = true;
+            
+            const feedbackArea = document.getElementById(`quiz-feedback-${slideIndex}`);
+            if (feedbackArea) feedbackArea.style.display = 'none';
+            selectedOptionButton = null;
+        }
 
-                requestAnimationFrame(() => {
-                    if (slides[index]) {
-                        slides[index].classList.add('active');
-                        console.log(`Slide ${index} class 'active' added.`);
+
+        function attachQuizEventListeners(slideIndex) {
+            const slideElement = slideElements[slideIndex];
+            const optionsContainer = slideElement.querySelector('.quiz-options');
+            const submitButton = document.getElementById(`submit-quiz-button-${slideIndex}`);
+
+            if (optionsContainer && submitButton) {
+                Array.from(optionsContainer.children).forEach(button => {
+                    button.onclick = () => {
+                        if (selectedOptionButton) {
+                            selectedOptionButton.classList.remove('selected');
+                        }
+                        button.classList.add('selected');
+                        selectedOptionButton = button;
+                        submitButton.disabled = false;
+                    };
+                });
+
+                submitButton.onclick = () => handleSubmitQuiz(slideIndex);
+            }
+        }
+
+        function handleSubmitQuiz(slideIndex) {
+            if (!selectedOptionButton) return;
+
+            const slideData = slidesData[slideIndex];
+            const feedbackArea = document.getElementById(`quiz-feedback-${slideIndex}`);
+            const options = slideElements[slideIndex].querySelectorAll('.quiz-option-button');
+
+            options.forEach(btn => btn.disabled = true); // 全ての選択肢を無効化
+
+            const isCorrect = selectedOptionButton.textContent === slideData.answer;
+
+            if (isCorrect) {
+                selectedOptionButton.classList.add('correct');
+                selectedOptionButton.classList.remove('selected');
+                feedbackArea.innerHTML = `<p class="font-semibold"><i class="fas fa-check-circle mr-2"></i>正解！</p>`;
+                feedbackArea.className = 'quiz-feedback correct';
+            } else {
+                selectedOptionButton.classList.add('incorrect');
+                selectedOptionButton.classList.remove('selected');
+                feedbackArea.innerHTML = `<p class="font-semibold"><i class="fas fa-times-circle mr-2"></i>不正解...</p>`;
+                feedbackArea.className = 'quiz-feedback incorrect';
+                // 正解の選択肢をハイライト
+                options.forEach(btn => {
+                    if (btn.textContent === slideData.answer) {
+                        btn.classList.add('correct');
                     }
                 });
-            } else {
-                console.error(`Slide at index ${index} not found.`);
             }
+            feedbackArea.innerHTML += `<p class="quiz-explanation mt-2">${slideData.explanation}</p>`;
+            feedbackArea.style.display = 'block';
 
-            currentSlideIndex = index;
-            updateNavigation();
-
-            if (slidesData[index] && slidesData[index].title === "OSI参照モデル まとめ") {
-                setupDataFlowAnimation();
-                const playButton = document.getElementById('play-animation-button');
-                if (playButton) {
-                    playButton.onclick = playDataFlowAnimation;
-                }
-            }
+            const submitButton = document.getElementById(`submit-quiz-button-${slideIndex}`);
+            if (submitButton) submitButton.disabled = true; // 回答後は回答ボタンを無効化
         }
 
 
         function updateNavigation() {
             prevButton.disabled = currentSlideIndex === 0;
             nextButton.disabled = currentSlideIndex === slidesData.length - 1;
-            slideCounterElement.textContent = `スライド ${currentSlideIndex + 1} / ${slidesData.length}`;
-            console.log(`Navigation updated. Current slide: ${currentSlideIndex + 1}`);
+            slideCounterElement.textContent = `${currentSlideIndex + 1} / ${slidesData.length}`;
         }
 
         function initSlideshow() {
-            console.log("Initializing slideshow...");
-            if (!slideContentArea) {
-                console.error("slideContentArea not found!");
-                return;
-            }
             slidesData.forEach((data, index) => {
-                const slideElement = createSlideDOM(data, index);
-                slideContentArea.appendChild(slideElement);
-                slides.push(slideElement);
+                const slideElement = createSlideElement(data, index);
+                slideArea.appendChild(slideElement);
+                slideElements.push(slideElement);
             });
-            console.log(`${slides.length} slides created and pushed.`);
-            showSlide(0); // Show the first slide
+            showSlide(0);
+            prevButton.addEventListener('click', () => {
+                if (currentSlideIndex > 0) showSlide(currentSlideIndex - 1, 'prev');
+            });
+            nextButton.addEventListener('click', () => {
+                if (currentSlideIndex < slidesData.length - 1) showSlide(currentSlideIndex + 1, 'next');
+            });
         }
-        
+
         function setupDataFlowAnimation() {
-            const senderStack = document.getElementById('sender-stack');
-            const receiverStack = document.getElementById('receiver-stack');
-            const layers = ["App", "Pres", "Sess", "Trans", "Net", "Data", "Phys"]; 
-
-            if (!senderStack || !receiverStack) {
-                console.warn("Sender/Receiver stack for animation not found.");
-                return;
-            }
-
-            senderStack.innerHTML = ''; 
-            receiverStack.innerHTML = ''; 
-
-            layers.forEach(layer => {
+            const senderStackEl = document.getElementById('sender-stack');
+            const receiverStackEl = document.getElementById('receiver-stack');
+            const layers = ["アプリ", "プレゼン", "セッション", "トランス", "ネット", "データL", "物理"];
+            if (!senderStackEl || !receiverStackEl) return;
+            senderStackEl.innerHTML = ''; receiverStackEl.innerHTML = '';
+            const layerColors = ["#f97316", "#eab308", "#84cc16", "#10b981", "#06b6d4", "#3b82f6", "#6366f1"];
+            layers.forEach((layer, i) => {
                 const senderBox = document.createElement('div');
-                senderBox.classList.add('layer-box');
-                senderBox.textContent = layer;
-                senderBox.style.borderColor = getLayerColor(layer);
-                senderStack.appendChild(senderBox);
-
+                senderBox.classList.add('layer-box'); senderBox.textContent = layer;
+                senderBox.style.borderColor = layerColors[i]; senderStackEl.appendChild(senderBox);
                 const receiverBox = document.createElement('div');
-                receiverBox.classList.add('layer-box');
-                receiverBox.textContent = layer;
-                receiverBox.style.borderColor = getLayerColor(layer);
-                receiverStack.appendChild(receiverBox);
+                receiverBox.classList.add('layer-box'); receiverBox.textContent = layer;
+                receiverBox.style.borderColor = layerColors[i]; receiverStackEl.appendChild(receiverBox);
             });
-            console.log("Data flow animation layers setup.");
-        }
-
-        function getLayerColor(layerName) {
-            const colors = {
-                "App": "#ea580c", "Pres": "#ca8a04", "Sess": "#65a30d",
-                "Trans": "#059669", "Net": "#0891b2", "Data": "#0284c7", "Phys": "#4f46e5"
-            };
-            return colors[layerName] || "#6b7280";
         }
 
         async function playDataFlowAnimation() {
-            console.log("Playing data flow animation.");
-            const packetSender = document.getElementById('packet-sender');
-            const packetReceiver = document.getElementById('packet-receiver');
+            const packet = document.getElementById('packet-animation');
             const container = document.getElementById('data-flow-animation-container');
-            if (!packetSender || !packetReceiver || !container) {
-                console.error("Animation elements not found.");
-                return;
-            }
-
             const playButton = document.getElementById('play-animation-button');
-            if(playButton) playButton.disabled = true;
+            if (!packet || !container || !playButton) return;
+            playButton.disabled = true;
 
             const containerRect = container.getBoundingClientRect();
-            const initialTop = 10; 
-            const finalTop = containerRect.height - packetSender.offsetHeight - 10; 
-            const senderX = containerRect.width * 0.25 - (packetSender.offsetWidth / 2); 
-            const receiverX = containerRect.width * 0.75 - (packetReceiver.offsetWidth / 2); 
+            const packetHeight = packet.offsetHeight; const packetWidth = packet.offsetWidth;
+            const senderStackRect = document.getElementById('sender-stack').getBoundingClientRect();
+            const receiverStackRect = document.getElementById('receiver-stack').getBoundingClientRect();
+            const senderX = (senderStackRect.left + senderStackRect.width / 2) - containerRect.left - (packetWidth / 2);
+            const receiverX = (receiverStackRect.left + receiverStackRect.width / 2) - containerRect.left - (packetWidth / 2);
+            const topY = 15; const bottomY = containerRect.height - packetHeight - 15;
 
-            packetSender.style.opacity = '1';
-            packetReceiver.style.opacity = '0';
-            packetSender.style.top = `${initialTop}px`;
-            packetSender.style.left = `${senderX}px`;
-            packetReceiver.style.top = `${finalTop}px`;
-            packetReceiver.style.left = `${receiverX}px`;
-
-            packetSender.style.transition = 'top 2s ease-in-out, left 0.5s ease-in-out, opacity 0.5s ease-in-out';
-            packetSender.style.top = `${finalTop}px`;
-            console.log("Sender packet moving down.");
-
-            await new Promise(resolve => setTimeout(resolve, 2000)); 
-
-            packetSender.style.left = `${receiverX}px`;
-            console.log("Sender packet moving across.");
-            
-            await new Promise(resolve => setTimeout(resolve, 500)); 
-
-            packetSender.style.opacity = '0';
-            packetReceiver.style.opacity = '1';
-            packetReceiver.style.transition = 'top 2s ease-in-out, opacity 0.5s ease-in-out';
-            console.log("Receiver packet appearing.");
-            
-            packetReceiver.style.top = `${initialTop}px`;
-            console.log("Receiver packet moving up.");
-
-            await new Promise(resolve => setTimeout(resolve, 2000)); 
-            if(playButton) playButton.disabled = false;
-            console.log("Data flow animation finished.");
+            packet.style.opacity = '1'; packet.style.top = `${topY}px`; packet.style.left = `${senderX}px`;
+            await new Promise(resolve => setTimeout(resolve, 100));
+            packet.style.top = `${bottomY}px`; await new Promise(resolve => setTimeout(resolve, 1100));
+            packet.style.left = `${receiverX}px`; await new Promise(resolve => setTimeout(resolve, 1100));
+            packet.style.top = `${topY}px`; await new Promise(resolve => setTimeout(resolve, 1100));
+            packet.style.opacity = '0'; await new Promise(resolve => setTimeout(resolve, 500));
+            playButton.disabled = false;
         }
 
-        prevButton.addEventListener('click', () => {
-            if (currentSlideIndex > 0) {
-                showSlide(currentSlideIndex - 1);
-            }
-        });
-
-        nextButton.addEventListener('click', () => {
-            if (currentSlideIndex < slidesData.length - 1) {
-                showSlide(currentSlideIndex + 1);
-            }
-        });
-
-        // --- クイズ開始 ---
-        // DOMが完全に読み込まれてから初期化処理を実行する
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initSlideshow);
-        } else {
-            initSlideshow(); // 既に読み込み完了の場合
-        }
-
+        document.addEventListener('DOMContentLoaded', initSlideshow);
     </script>
 </body>
 </html>
