@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>【経験者向け】CCNP取得＆キャリアアップ転職支援｜次世代ITインフラエンジニアへ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+        }
+        /* Updated Hero Background with Green Theme */
+        .hero-bg {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://placehold.co/1200x600/10b981/ffffff') no-repeat center center; /* Emerald background */
+            background-size: cover;
+        }
+        .cta-button {
+            transition: all 0.3s ease;
+        }
+        .cta-button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInAnimation 0.8s ease-out forwards;
+        }
+        @keyframes fadeInAnimation {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        section > div {
+            animation-delay: 0.2s;
+        }
+        /* Styling for the flow chart (Green arrow) */
+        .flow-step {
+            position: relative;
+            padding-bottom: 2.5rem; /* Space for arrow */
+        }
+        .flow-step:not(:last-child)::after {
+            content: '\f061'; /* Font Awesome arrow icon */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 50%;
+            bottom: 0.5rem;
+            transform: translateX(-50%) rotate(90deg); /* Point arrow down */
+            color: #10b981; /* Emerald color */
+            font-size: 1.5rem;
+        }
+         /* Responsive adjustments for flow chart */
+        @media (min-width: 768px) { /* md breakpoint */
+            .flow-step:not(:last-child)::after {
+                 transform: translateX(0) translateY(-50%) rotate(0deg); /* Point arrow right */
+                 left: auto;
+                 right: -2rem; /* Position between steps */
+                 top: 50%;
+                 bottom: auto;
+            }
+             .flow-step {
+                padding-bottom: 0;
+                padding-right: 4rem; /* Space for arrow */
+            }
+        }
+
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="text-xl font-bold text-emerald-600">Next Step Infra</div>
+            <div>
+                <a href="#contact" class="bg-emerald-600 text-white font-semibold px-4 py-2 rounded-md hover:bg-emerald-700 cta-button text-sm">無料キャリア相談はこちら</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero-bg text-white py-20 md:py-32">
+        <div class="container mx-auto px-6 text-center">
+            <h1 class="text-3xl md:text-5xl font-bold mb-4 leading-tight">
+                <span class="text-amber-300">もう、SESで終わらない。</span><br> CCNP取得で市場価値を高め、理想のキャリアを掴む。
+            </h1>
+            <p class="text-lg md:text-xl mb-8">
+                未経験から多数のエンジニアを輩出してきた私たちが、<br class="hidden md:inline">あなたのインフラエンジニアとしての<span class="font-bold">ネクストキャリア</span>を全力でサポートします。
+            </p>
+            <a href="#contact" class="bg-amber-400 text-gray-900 font-bold px-8 py-4 rounded-lg text-lg hover:bg-amber-500 cta-button shadow-lg">
+                まずは無料キャリア相談へ (オンライン)
+            </a>
+            <p class="mt-4 text-sm opacity-80">無理な勧誘は一切ありません</p>
+        </div>
+    </section>
+
+    <section class="py-16 bg-white fade-in">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-8">今の環境に<span class="text-emerald-600">満足</span>していますか？</h2>
+            <div class="grid md:grid-cols-3 gap-8 text-left">
+                <div class="bg-gray-100 p-6 rounded-lg shadow hover:shadow-lg transition-shadow duration-300">
+                    <h3 class="font-semibold text-lg mb-2 text-emerald-700">伸び悩むスキル</h3>
+                    <p class="text-gray-600 text-sm">ルーチンワークが多く、新しい技術に触れる機会がない。もっと設計・構築やクラウド、セキュリティ分野に挑戦したいが、今の現場では難しいと感じている。</p>
+                </div>
+                <div class="bg-gray-100 p-6 rounded-lg shadow hover:shadow-lg transition-shadow duration-300">
+                    <h3 class="font-semibold text-lg mb-2 text-emerald-700">正当な評価と待遇</h3>
+                    <p class="text-gray-600 text-sm">経験やスキルが給与に反映されていない気がする。市場価値に見合った評価と待遇を得られる環境に移りたい。</p>
+                </div>
+                <div class="bg-gray-100 p-6 rounded-lg shadow hover:shadow-lg transition-shadow duration-300">
+                    <h3 class="font-semibold text-lg mb-2 text-emerald-700">キャリアの将来性</h3>
+                    <p class="text-gray-600 text-sm">このまま今の働き方を続けていて、数年後も通用するだろうか？将来性のある分野で、長く活躍できるエンジニアになりたい。</p>
+                </div>
+            </div>
+             <p class="mt-10 text-xl font-semibold text-gray-700">その課題、<span class="text-emerald-600">CCNP取得</span>と<span class="text-emerald-600">戦略的な転職</span>で解決への道筋が見えます。</p>
+        </div>
+    </section>
+
+    <section id="service-ccnp" class="py-16 fade-in">
+        <div class="container mx-auto px-6">
+             <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-12">
+                <span class="text-emerald-600">CCNP取得</span>で、市場価値を「見える化」する
+            </h2>
+            <div class="md:flex items-center gap-12">
+                <div class="md:w-1/2 mb-8 md:mb-0">
+                    <img src="https://placehold.co/600x400/d1fae5/10b981" alt="CCNP学習サポート" class="rounded-lg shadow-md w-full">
+                </div>
+                <div class="md:w-1/2">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">経験者向け 効率重視のCCNP学習プログラム</h3>
+                    <p class="text-gray-600 mb-6">
+                        実務経験を最大限に活かし、最短ルートでのCCNP取得を目指します。Udemyで高評価を得た教材ノウハウやCCNA資格対策本の出版実績を基にした、質の高い学習コンテンツを提供します。
+                    </p>
+                    <div class="space-y-4 mb-6">
+                        <div class="flex items-start">
+                            <svg class="w-6 h-6 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <div>
+                                <h4 class="font-semibold">充実のマンツーマンサポート</h4>
+                                <p class="text-sm text-gray-600">経験豊富なプロがオンラインで個別指導。あなたの理解度に合わせて進めます。</p>
+                            </div>
+                        </div>
+                         <div class="flex items-start">
+                            <svg class="w-6 h-6 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <div>
+                                <h4 class="font-semibold">いつでもLINEで質問可能</h4>
+                                <p class="text-sm text-gray-600">学習中の疑問はLINEで気軽に質問OK。すぐに解決して次に進めます。</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <svg class="w-6 h-6 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <div>
+                                <h4 class="font-semibold">高品質な動画講義</h4>
+                                <p class="text-sm text-gray-600">体系的に学べる動画コンテンツが見放題。自分のペースで学習できます。</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                           <svg class="w-6 h-6 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <div>
+                                <h4 class="font-semibold">オンライン演習サイト完備</h4>
+                                <p class="text-sm text-gray-600">実践的なスキルを身につけるためのオンライン演習環境をご用意。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-emerald-50 p-6 rounded-lg border border-emerald-200 text-center">
+                        <p class="text-lg font-semibold text-emerald-800 mb-2">CCNP学習支援プログラム</p>
+                        <p class="text-3xl font-bold text-emerald-600">100,000円 <span class="text-sm font-normal text-gray-600">(税別)</span></p>
+                        <p class="text-sm text-gray-500 mt-2">※学習期間の目安: 3ヶ月〜（個人差あり）</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="service-career" class="py-16 bg-emerald-50 fade-in">
+        <div class="container mx-auto px-6">
+             <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-12">
+                資格を武器に、<span class="text-emerald-600">理想のキャリア</span>へ。転職成功まで徹底伴走
+            </h2>
+            <div class="md:flex flex-row-reverse items-center gap-12">
+                <div class="md:w-1/2 mb-8 md:mb-0">
+                     <img src="https://placehold.co/600x400/a7f3d0/047857" alt="転職サポート" class="rounded-lg shadow-md w-full">
+                </div>
+                <div class="md:w-1/2">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">人材紹介ノウハウ × IT専門知識 = 最適マッチング</h3>
+                    <p class="text-gray-600 mb-6">
+                        元々人材紹介業からスタートした弊社は、<span class="font-bold">豊富な求人数と企業との太いパイプ</span>が強みです。あなたのCCNP資格と実務経験を最大限評価してくれる企業への転職を、業界に精通したキャリアアドバイザーが実現します。未経験者向け転職支援で培った<span class="font-bold">大手SIer等への紹介実績</span>も多数あります。
+                    </p>
+                    <ul class="list-disc list-inside text-gray-600 mb-6 space-y-2">
+                        <li><span class="font-semibold">キャリア戦略策定:</span> あなたの強みと希望を基に最適なキャリアプランを設計</li>
+                        <li><span class="font-semibold">厳選求人紹介:</span> 一般には出回らない非公開求人を含む、優良企業をご紹介</li>
+                        <li><span class="font-semibold">書類添削:</span> 魅力を最大限に伝える応募書類を作成サポート</li>
+                        <li><span class="font-semibold">徹底した面接対策:</span> 想定問答から模擬面接まで、自信を持って臨めるよう対策</li>
+                        <li><span class="font-semibold">年収・条件交渉代行:</span> あなたに代わって企業と交渉し、より良い条件を目指します</li>
+                        <li><span class="font-semibold">入社後フォロー:</span> 新しい環境でスムーズに活躍できるようサポート</li>
+                    </ul>
+                     <p class="text-sm text-gray-500 mt-4 bg-white p-3 rounded border border-gray-200">※転職支援サービスは、弊社経由で転職が成功した場合に企業様から紹介手数料をいただくモデルです。求職者様から費用をいただくことは一切ありません。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="why-ccnp" class="py-16 bg-white fade-in">
+        <div class="container mx-auto px-6">
+             <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-12">
+                なぜ<span class="text-emerald-600">CCNP</span>が、あなたのキャリアを加速させるのか？
+            </h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                 <div class="text-center p-6 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+                    <div class="mb-4">
+                        <i class="fas fa-chart-line text-4xl text-emerald-500"></i>
+                    </div>
+                    <h3 class="font-semibold text-lg mb-2 text-gray-800">市場価値の向上</h3>
+                    <p class="text-gray-600 text-sm">高度なネットワーク知識・スキルを証明。難関資格保有者として、企業からの評価が格段に上がります。</p>
+                </div>
+                <div class="text-center p-6 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+                     <div class="mb-4">
+                        <i class="fas fa-yen-sign text-4xl text-green-500"></i> {/* Kept green for money */}
+                    </div>
+                    <h3 class="font-semibold text-lg mb-2 text-gray-800">年収アップの可能性</h3>
+                    <p class="text-gray-600 text-sm">資格手当や、より高待遇なポジションへの転職により、大幅な年収アップが期待できます。</p>
+                </div>
+                <div class="text-center p-6 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+                     <div class="mb-4">
+                        <i class="fas fa-briefcase text-4xl text-sky-500"></i> {/* Changed to sky blue for contrast */}
+                    </div>
+                    <h3 class="font-semibold text-lg mb-2 text-gray-800">キャリアの選択肢拡大</h3>
+                    <p class="text-gray-600 text-sm">大手SIer、人気自社サービス企業、クラウド、セキュリティなど、活躍できるフィールドが広がります。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="strengths" class="py-16 bg-gray-50 fade-in">
+        <div class="container mx-auto px-6">
+             <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-12">
+                Next Step Infraが<span class="text-emerald-600">選ばれる理由</span>
+            </h2>
+            <div class="md:flex gap-8 items-stretch">
+                <div class="md:w-1/3 bg-white p-6 rounded-lg shadow-md mb-6 md:mb-0 flex flex-col items-center text-center border-t-4 border-emerald-500">
+                    <div class="mb-4 text-emerald-500">
+                        <i class="fas fa-user-tie text-4xl"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">経験者特化のノウハウ</h3>
+                    <p class="text-gray-600 text-sm flex-grow">インフラ実務経験者の「あと一歩」を後押しするカリキュラムとサポート体制。効率的なスキルアップとキャリアチェンジを実現します。</p>
+                </div>
+                <div class="md:w-1/3 bg-white p-6 rounded-lg shadow-md mb-6 md:mb-0 flex flex-col items-center text-center border-t-4 border-green-500"> {/* Kept green */}
+                     <div class="mb-4 text-green-500">
+                        <i class="fas fa-book-open-reader text-4xl"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">信頼の教材実績</h3>
+                    <p class="text-gray-600 text-sm flex-grow">Udemy高評価・ベストセラー教材やCCNA資格対策本の出版実績に基づいた、質の高い学習コンテンツを提供。確かな知識が身につきます。</p>
+                </div>
+                 <div class="md:w-1/3 bg-white p-6 rounded-lg shadow-md flex flex-col items-center text-center border-t-4 border-sky-500"> {/* Changed to sky blue */}
+                    <div class="mb-4 text-sky-500">
+                        <i class="fas fa-handshake text-4xl"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">豊富な求人と転職支援力</h3>
+                    <p class="text-gray-600 text-sm flex-grow">人材紹介業の経験を活かした、幅広い求人ネットワークと的確なキャリアアドバイス。あなたの市場価値を最大限に高める転職を支援します。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="flow" class="py-16 bg-white fade-in">
+        <div class="container mx-auto px-6">
+            <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-16">
+                ご利用の流れ (無料相談〜転職成功まで)
+            </h2>
+            <div class="md:flex justify-center items-start space-y-8 md:space-y-0 md:space-x-8">
+                 <div class="flow-step text-center md:w-1/5">
+                    <div class="mb-2 inline-block bg-emerald-100 text-emerald-600 rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold">1</div>
+                    <h3 class="font-semibold mb-1">無料キャリア相談</h3>
+                    <p class="text-sm text-gray-600">オンラインで現状や目標をヒアリング。最適なプランをご提案。</p>
+                </div>
+                <div class="flow-step text-center md:w-1/5">
+                    <div class="mb-2 inline-block bg-emerald-100 text-emerald-600 rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold">2</div>
+                    <h3 class="font-semibold mb-1">学習プログラム開始</h3>
+                    <p class="text-sm text-gray-600">CCNP取得に向け、マンツーマンサポートや動画講義で学習。</p>
+                </div>
+                <div class="flow-step text-center md:w-1/5">
+                    <div class="mb-2 inline-block bg-emerald-100 text-emerald-600 rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold">3</div>
+                    <h3 class="font-semibold mb-1">CCNP資格取得</h3>
+                    <p class="text-sm text-gray-600">学習の成果を発揮し、CCNP資格を取得。</p>
+                </div>
+                <div class="flow-step text-center md:w-1/5">
+                    <div class="mb-2 inline-block bg-emerald-100 text-emerald-600 rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold">4</div>
+                    <h3 class="font-semibold mb-1">転職サポート</h3>
+                    <p class="text-sm text-gray-600">求人紹介、書類添削、面接対策など、転職活動をフルサポート。</p>
+                </div>
+                 <div class="flow-step text-center md:w-1/5">
+                     <div class="mb-2 inline-block bg-green-100 text-green-600 rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold"><i class="fas fa-check"></i></div>
+                    <h3 class="font-semibold mb-1">内定・転職成功！</h3>
+                    <p class="text-sm text-gray-600">理想のキャリアへの第一歩。入社後もフォローします。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 bg-gray-50 fade-in">
+        <div class="container mx-auto px-6 text-center">
+             <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-8">このサービスは、<span class="text-emerald-600">こんなあなた</span>のためのものです</h2>
+            <p class="text-lg text-gray-600 mb-8 max-w-3xl mx-auto">
+                ITインフラエンジニアとしての実務経験（目安1年以上）があり、<span class="font-bold">現在のSESや派遣、中小SIerといった環境からステップアップしたい</span>と考えている方。CCNPレベルのスキルを身につけ、<span class="font-bold">大手企業、自社サービス企業、クラウドやセキュリティといった専門分野</span>で活躍したいという意欲のある方を歓迎します。
+            </p>
+             <div class="flex flex-wrap justify-center gap-2">
+                 <span class="bg-emerald-100 text-emerald-800 text-sm font-medium px-3 py-1 rounded-full">#インフラエンジニア経験者</span>
+                 <span class="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">#SESからの転職</span>
+                 <span class="bg-yellow-100 text-yellow-800 text-sm font-medium px-3 py-1 rounded-full">#CCNP取得目標</span>
+                 <span class="bg-pink-100 text-pink-800 text-sm font-medium px-3 py-1 rounded-full">#キャリアアップ</span>
+                 <span class="bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full">#年収アップ</span>
+                 <span class="bg-sky-100 text-sky-800 text-sm font-medium px-3 py-1 rounded-full">#市場価値向上</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="testimonials" class="py-16 fade-in">
+        <div class="container mx-auto px-6">
+            <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-12">期待されるキャリアチェンジ事例</h2>
+             <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">※本サービスは経験者向けに開始したばかりですが、弊社の未経験者向け支援実績やCCNPの市場価値に基づき、以下のようなキャリアアップが期待できます。</p>
+            <div class="grid md:grid-cols-3 gap-8">
+                {/* Testimonial cards - styling remains largely the same, focus was on color theme */}
+                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 transform hover:scale-105 transition-transform duration-300">
+                     <p class="text-gray-600 mb-4 italic">"CCNP取得と手厚いサポートのおかげで、念願だった自社サービス企業のインフラ部門へ。年収も150万円アップしました！"</p>
+                    <p class="font-semibold text-gray-800">Aさん (29歳) のようなキャリア</p>
+                    <p class="text-sm text-gray-500">SES (運用保守) → 自社サービス企業 (インフラ設計構築)</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 transform hover:scale-105 transition-transform duration-300">
+                    <p class="text-gray-600 mb-4 italic">"資格取得だけでなく、面接対策まで丁寧に対応いただき、大手SIerのクラウド案件に参画できました。挑戦したかった分野です！"</p>
+                    <p class="font-semibold text-gray-800">Bさん (33歳) のようなキャリア</p>
+                    <p class="text-sm text-gray-500">中小SIer (NW構築) → 大手SIer (クラウドエンジニア)</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 transform hover:scale-105 transition-transform duration-300">
+                    <p class="text-gray-600 mb-4 italic">"マンツーマン指導で効率的に学習でき、短期間でCCNPを取得。希望通りのセキュリティ分野へのキャリアチェンジが実現しました。"</p>
+                    <p class="font-semibold text-gray-800">Cさん (27歳) のようなキャリア</p>
+                    <p class="text-sm text-gray-500">派遣エンジニア → セキュリティベンダー (ネットワークセキュリティ)</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="py-20 bg-gradient-to-r from-emerald-600 to-teal-700 text-white fade-in">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6">あなたの「次」のキャリア、ここから始めませんか？</h2>
+            <p class="text-lg md:text-xl mb-10 max-w-3xl mx-auto opacity-90">
+                まずは無料のオンラインキャリア相談で、あなたの現状と目標をお聞かせください。<br>
+                CCNP取得と転職のプロが、あなたに最適なステップアップ戦略を一緒に考えます。
+            </p>
+            <a href="#contact-form" class="bg-amber-400 text-gray-900 font-bold px-10 py-4 rounded-lg text-xl hover:bg-amber-500 cta-button shadow-lg inline-block mb-4">
+                無料キャリア相談に申し込む (簡単60秒)
+            </a>
+             <p class="text-emerald-100 text-sm">オンライン実施だから全国どこからでもOK！</p>
+
+             <div id="contact-form" class="mt-12 max-w-lg mx-auto bg-white p-8 rounded-lg shadow-xl text-left text-gray-800">
+                <h3 class="text-xl font-bold mb-6 text-center text-emerald-600">無料キャリア相談 申し込みフォーム</h3>
+                <form action="#" method="POST">
+                    <div class="mb-4">
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">お名前 <span class="text-red-500">*</span></label>
+                        <input type="text" id="name" name="name" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                    <div class="mb-4">
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">メールアドレス <span class="text-red-500">*</span></label>
+                        <input type="email" id="email" name="email" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                     <div class="mb-4">
+                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">電話番号</label>
+                        <input type="tel" id="phone" name="phone" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                    <div class="mb-6">
+                        <label for="message" class="block text-sm font-medium text-gray-700 mb-1">ご相談内容・ご要望など (任意)</label>
+                        <textarea id="message" name="message" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="bg-emerald-600 text-white font-semibold px-8 py-3 rounded-md hover:bg-emerald-700 cta-button w-full">
+                            送信する
+                        </button>
+                    </div>
+                     <p class="text-xs text-gray-500 mt-4 text-center">ご入力いただいた情報は、プライバシーポリシーに基づき厳重に管理いたします。</p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-gray-800 text-gray-400 py-8">
+        <div class="container mx-auto px-6 text-center text-sm">
+             <p class="mb-2 text-lg font-semibold text-emerald-500">Next Step Infra</p>
+            <div class="mt-4 mb-4 space-x-4">
+                <a href="#" class="hover:text-white">サービス概要</a>
+                <a href="#" class="hover:text-white">運営会社</a>
+                <a href="#" class="hover:text-white">プライバシーポリシー</a>
+                <a href="#contact" class="hover:text-white">お問い合わせ</a>
+            </div>
+            <p>&copy; 2024 Next Step Infra. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Simple fade-in animation trigger
+        const fadeInElements = document.querySelectorAll('.fade-in');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                    observer.unobserve(entry.target); // Optional: stop observing once animated
+                }
+            });
+        }, { threshold: 0.1 }); // Trigger when 10% visible
+
+        fadeInElements.forEach(el => {
+            el.style.animationPlayState = 'paused'; // Start paused
+            observer.observe(el);
+        });
+    </script>
+
+</body>
+</html>
