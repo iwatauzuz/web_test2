@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSI参照モデル解説スライドショー</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Tailwind gray-100 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden; /* スライドショーのコンテナ外のスクロールを防ぐ */
+        }
+        .slideshow-container {
+            background-color: white;
+            width: 90%;
+            max-width: 900px;
+            height: 600px; /* 固定の高さを設定 */
+            border-radius: 0.75rem; /* Tailwind rounded-xl */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* Tailwind shadow-xl */
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden; /* スライド内のコンテンツがはみ出ないように */
+        }
+        .slide {
+            width: 100%;
+            height: calc(100% - 60px); /* ナビゲーション分を引いた高さ */
+            padding: 2rem;
+            display: flex; /* 常時flexで、表示制御はopacityとtransform */
+            pointer-events: none; /* デフォルトでは操作不可 */
+            z-index: 1; /* 非アクティブスライドのz-index */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0; /* デフォルトは非表示 (透明) */
+            transition: opacity 0.7s ease-in-out, transform 0.7s ease-in-out;
+            transform: translateX(100%); /* 初期位置を右外に */
+        }
+        .slide.active {
+            opacity: 1; /* 表示 */
+            transform: translateX(0); /* アクティブなスライドは中央に */
+            pointer-events: auto; /* アクティブなスライドは操作可能に */
+            z-index: 2; /* アクティブスライドを最前面に */
+        }
+        /* 左へ出ていくアニメーション用のクラス */
+        .slide.prev-transition {
+            transform: translateX(-100%);
+            opacity: 0; /* CSSトランジションで透明になる */
+            z-index: 1; /* active よりは後ろ */
+        }
+        .slide h2 {
+            font-size: 2rem; /* Tailwind text-3xl */
+            font-weight: 700; /* Tailwind font-bold */
+            color: #1e40af; /* Tailwind blue-800 */
+            margin-bottom: 1rem;
+        }
+        .slide h3 {
+            font-size: 1.5rem; /* Tailwind text-2xl */
+            font-weight: 600; /* Tailwind font-semibold */
+            color: #1d4ed8; /* Tailwind blue-700 */
+            margin-bottom: 1.5rem;
+        }
+        .slide p {
+            font-size: 1rem; /* Tailwind text-base */
+            color: #374151; /* Tailwind gray-700 */
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            max-width: 600px;
+        }
+        .slide .keywords {
+            font-size: 0.9rem;
+            color: #4b5563; /* Tailwind gray-600 */
+            background-color: #e5e7eb; /* Tailwind gray-200 */
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            display: inline-block;
+        }
+        .slide .analogy {
+            font-style: italic;
+            color: #166534; /* Tailwind green-700 */
+            background-color: #dcfce7; /* Tailwind green-100 */
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            border-left: 4px solid #22c55e; /* Tailwind green-500 */
+        }
+
+        .navigation-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: #f9fafb; /* Tailwind gray-50 */
+            border-top: 1px solid #e5e7eb; /* Tailwind gray-200 */
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 60px; /* ナビゲーションの高さを固定 */
+        }
+        .nav-button {
+            padding: 0.5rem 1.5rem;
+            background-color: #3b82f6; /* Tailwind blue-500 */
+            color: white;
+            border: none;
+            border-radius: 0.5rem; /* Tailwind rounded-lg */
+            font-size: 1rem;
+            font-weight: 500; /* Tailwind font-medium */
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .nav-button:hover {
+            background-color: #2563eb; /* Tailwind blue-600 */
+        }
+        .nav-button:disabled {
+            background-color: #9ca3af; /* Tailwind gray-400 */
+            cursor: not-allowed;
+        }
+        .slide-counter {
+            font-size: 0.9rem;
+            color: #4b5563; /* Tailwind gray-600 */
+        }
+
+        /* アニメーション用スタイル */
+        .data-flow-animation {
+            width: 100%;
+            height: 250px;
+            position: relative;
+            margin-top: 1.5rem;
+            border: 1px solid #d1d5db; /* Tailwind gray-300 */
+            border-radius: 0.5rem;
+            overflow: hidden; /* パケットがはみ出ないように */
+            background-image: linear-gradient(45deg, #e5e7eb 25%, transparent 25%),
+                              linear-gradient(-45deg, #e5e7eb 25%, transparent 25%),
+                              linear-gradient(45deg, transparent 75%, #e5e7eb 75%),
+                              linear-gradient(-45deg, transparent 75%, #e5e7eb 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+        .layer-box-container {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+        }
+        .layer-stack {
+            display: flex;
+            flex-direction: column-reverse; /* 下から上に積む */
+            justify-content: space-around;
+            align-items: center;
+            height: 100%;
+            padding: 10px 0;
+        }
+        .layer-box {
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border: 1px solid;
+            border-radius: 4px;
+            margin: 2px 0;
+            width: 100px; /* 幅を固定 */
+            text-align: center;
+            background-color: white;
+        }
+        .packet {
+            width: 30px;
+            height: 20px;
+            background-color: #ef4444; /* Tailwind red-500 */
+            border-radius: 4px;
+            position: absolute;
+            transition: top 1s ease-in-out, left 1s ease-in-out, opacity 0.5s ease-in-out; /* opacityのtransition追加 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        .packet.sender {
+            /* 初期位置はJSで設定 */
+        }
+        .packet.receiver {
+            /* 初期位置はJSで設定 */
+        }
+
+        /* 各層のアイコン（簡易的なもの） */
+        .layer-icon {
+            font-size: 3rem; /* Tailwind text-5xl */
+            margin-bottom: 1rem;
+        }
+        .icon-app { color: #ea580c; } /* Tailwind orange-600 */
+        .icon-pres { color: #ca8a04; } /* Tailwind yellow-600 */
+        .icon-sess { color: #65a30d; } /* Tailwind lime-600 */
+        .icon-trans { color: #059669; } /* Tailwind emerald-600 */
+        .icon-net { color: #0891b2; } /* Tailwind cyan-600 */
+        .icon-data { color: #0284c7; } /* Tailwind sky-600 */
+        .icon-phys { color: #4f46e5; } /* Tailwind indigo-600 */
+
+    </style>
+</head>
+<body>
+    <div class="slideshow-container">
+        <div id="slide-content-area"></div>
+
+        <div class="navigation-controls">
+            <button id="prev-button" class="nav-button">戻る</button>
+            <span id="slide-counter" class="slide-counter"></span>
+            <button id="next-button" class="nav-button">次へ</button>
+        </div>
+    </div>
+
+    <script>
+        // DEBUG: ブラウザのコンソールでエラーメッセージが出ていないか確認してください。
+        console.log("Slideshow script started.");
+
+        const slidesData = [
+            {
+                title: "OSI参照モデルへようこそ！",
+                content: `
+                    <p>OSI参照モデルは、コンピュータネットワークの機能を7つの階層に分けて定義したものです。</p>
+                    <p>これにより、異なるメーカーの機器同士でも通信できるようになります。各層は特定の役割を担い、隣接する層と連携して動作します。</p>
+                    <p class="mt-4">このスライドショーで、各層の役割を一緒に見ていきましょう！</p>
+                    <div class="layer-icon mt-6">🌐</div>
+                `
+            },
+            {
+                title: "第7層: アプリケーション層",
+                layerName: "Application Layer",
+                icon: "💻",
+                iconClass: "icon-app",
+                description: "ユーザーが直接操作するアプリケーションやサービスに最も近い層です。ファイル転送、メール、ウェブ閲覧などの機能を提供します。",
+                protocols: "HTTP, FTP, SMTP, DNS, Telnet",
+                analogy: "例えるなら、あなたが使う「ソフトウェアの顔」。ウェブブラウザやメールソフトがこれにあたります。"
+            },
+            {
+                title: "第6層: プレゼンテーション層",
+                layerName: "Presentation Layer",
+                icon: "🎨",
+                iconClass: "icon-pres",
+                description: "データの表現形式を管理します。文字コードの変換、データの暗号化・復号化、圧縮・解凍などを行います。",
+                protocols: "SSL/TLS, JPEG, GIF, ASCII, EBCDIC",
+                analogy: "例えるなら、「翻訳家兼フォーマッター」。相手にわかる言葉や形にデータを整えます。"
+            },
+            {
+                title: "第5層: セッション層",
+                layerName: "Session Layer",
+                icon: "🤝",
+                iconClass: "icon-sess",
+                description: "通信の開始から終了までの一連の流れ（セッション）を管理します。同期を取り、データの送受信のタイミングなどを制御します。",
+                protocols: "NetBIOS, RPC, PPTP",
+                analogy: "例えるなら、「会話の管理人」。通信の開始、途中での確認、終了の合図などを担当します。"
+            },
+            {
+                title: "第4層: トランスポート層",
+                layerName: "Transport Layer",
+                icon: "🚚",
+                iconClass: "icon-trans",
+                description: "データの信頼性や効率的な転送を保証します。エラー訂正や再送制御、コネクションの確立などを行います。ポート番号でアプリケーションを識別します。",
+                protocols: "TCP, UDP",
+                analogy: "例えるなら、「配送業者」。荷物（データ）を確実に、または素早く相手の窓口（ポート）まで届けます。"
+            },
+            {
+                title: "第3層: ネットワーク層",
+                layerName: "Network Layer",
+                icon: "🗺️",
+                iconClass: "icon-net",
+                description: "異なるネットワーク間のデータ転送（ルーティング）を担当します。IPアドレスを使って宛先を特定し、最適な経路を選択します。",
+                protocols: "IP (IPv4, IPv6), ICMP, ARP, RIP, OSPF",
+                analogy: "例えるなら、「郵便配達のルートプランナー」。住所（IPアドレス）を見て、最適な道順で手紙（データ）を届けます。"
+            },
+            {
+                title: "第2層: データリンク層",
+                layerName: "Data Link Layer",
+                icon: "�",
+                iconClass: "icon-data",
+                description: "直接接続された機器間のデータ転送を制御します。MACアドレスを使って通信相手を識別し、エラー検出も行います。",
+                protocols: "Ethernet, Wi-Fi, PPP, MACアドレス, フレーム",
+                analogy: "例えるなら、「隣同士の直接会話」。すぐ隣の機器に確実にデータを渡す役割です。"
+            },
+            {
+                title: "第1層: 物理層",
+                layerName: "Physical Layer",
+                icon: "🔌",
+                iconClass: "icon-phys",
+                description: "データを電気信号や光信号に変換し、ケーブルなどの物理的な媒体を通じて伝送します。ビット単位でデータを扱います。",
+                protocols: "イーサネットケーブル, 光ファイバー, ハブ, リピータ, RS-232C",
+                analogy: "例えるなら、「電気信号が通る道そのもの」。ケーブルやコネクタ、電圧のレベルなどを定義します。"
+            },
+            {
+                title: "OSI参照モデル まとめ",
+                content: `
+                    <p>各層が連携することで、複雑なネットワーク通信が実現されます。</p>
+                    <p>送信側ではデータが第7層から第1層へと加工され、受信側では第1層から第7層へと元に戻されていきます。</p>
+                    <div class="data-flow-animation" id="data-flow-animation-container">
+                        <div class="layer-box-container">
+                            <div class="layer-stack" id="sender-stack"> </div>
+                            <div class="layer-stack" id="receiver-stack"> </div>
+                        </div>
+                        <div class="packet sender" id="packet-sender">Data</div>
+                        <div class="packet receiver" id="packet-receiver" style="opacity:0;">Data</div>
+                    </div>
+                    <button id="play-animation-button" class="nav-button mt-4">アニメーション再生</button>
+                `
+            }
+        ];
+
+        const slideContentArea = document.getElementById('slide-content-area');
+        const prevButton = document.getElementById('prev-button');
+        const nextButton = document.getElementById('next-button');
+        const slideCounterElement = document.getElementById('slide-counter');
+
+        let currentSlideIndex = 0; // 初期スライドインデックス
+        let slides = []; // スライド要素を格納する配列
+
+        function createSlideDOM(slideData, index) {
+            const slideDiv = document.createElement('div');
+            slideDiv.classList.add('slide');
+            slideDiv.id = `slide-${index}`;
+
+            let innerHTML = `<h2>${slideData.title}</h2>`;
+            if (slideData.layerName) {
+                innerHTML += `<div class="layer-icon ${slideData.iconClass || ''}">${slideData.icon || '❓'}</div>`;
+                innerHTML += `<h3>${slideData.layerName}</h3>`;
+                innerHTML += `<p>${slideData.description}</p>`;
+                innerHTML += `<p class="keywords"><strong>主なプロトコル/技術:</strong> ${slideData.protocols}</p>`;
+                innerHTML += `<p class="analogy">${slideData.analogy}</p>`;
+            } else if (slideData.content) {
+                innerHTML += slideData.content;
+            }
+            slideDiv.innerHTML = innerHTML;
+            return slideDiv;
+        }
+
+        function showSlide(index) {
+            console.log(`Attempting to show slide: ${index}, current actual index: ${currentSlideIndex}`);
+            const oldIndex = currentSlideIndex;
+
+            if (index < 0 || index >= slides.length || (index === oldIndex && slides[index] && slides[index].classList.contains('active'))) {
+                console.log("Show slide condition not met or slide already active.");
+                return;
+            }
+
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active', 'prev-transition');
+                if (i === oldIndex) {
+                    if (index > oldIndex) {
+                        slide.classList.add('prev-transition');
+                         console.log(`Slide ${i} (old) is transitioning out left.`);
+                    } else {
+                        // For "back", the old slide (now to the right) fades out via default .slide styles
+                        console.log(`Slide ${i} (old) is transitioning out right (default).`);
+                    }
+                }
+            });
+
+            if (slides[index]) {
+                console.log(`Preparing to show new slide: ${index}`);
+                if (index < oldIndex) { // Moving backward
+                    slides[index].style.transform = 'translateX(-100%)';
+                    console.log(`New slide ${index} set to translateX(-100%)`);
+                } else { // Moving forward or initial load
+                    slides[index].style.transform = 'translateX(100%)';
+                    console.log(`New slide ${index} set to translateX(100%)`);
+                }
+
+                // Force reflow might help ensure the transform is applied before transition starts
+                // slides[index].offsetHeight; 
+
+                requestAnimationFrame(() => {
+                    if (slides[index]) {
+                        slides[index].classList.add('active');
+                        console.log(`Slide ${index} class 'active' added.`);
+                    }
+                });
+            } else {
+                console.error(`Slide at index ${index} not found.`);
+            }
+
+            currentSlideIndex = index;
+            updateNavigation();
+
+            if (slidesData[index] && slidesData[index].title === "OSI参照モデル まとめ") {
+                setupDataFlowAnimation();
+                const playButton = document.getElementById('play-animation-button');
+                if (playButton) {
+                    playButton.onclick = playDataFlowAnimation;
+                }
+            }
+        }
+
+
+        function updateNavigation() {
+            prevButton.disabled = currentSlideIndex === 0;
+            nextButton.disabled = currentSlideIndex === slidesData.length - 1;
+            slideCounterElement.textContent = `スライド ${currentSlideIndex + 1} / ${slidesData.length}`;
+            console.log(`Navigation updated. Current slide: ${currentSlideIndex + 1}`);
+        }
+
+        function initSlideshow() {
+            console.log("Initializing slideshow...");
+            if (!slideContentArea) {
+                console.error("slideContentArea not found!");
+                return;
+            }
+            slidesData.forEach((data, index) => {
+                const slideElement = createSlideDOM(data, index);
+                slideContentArea.appendChild(slideElement);
+                slides.push(slideElement);
+            });
+            console.log(`${slides.length} slides created and pushed.`);
+            showSlide(0); // Show the first slide
+        }
+        
+        function setupDataFlowAnimation() {
+            const senderStack = document.getElementById('sender-stack');
+            const receiverStack = document.getElementById('receiver-stack');
+            const layers = ["App", "Pres", "Sess", "Trans", "Net", "Data", "Phys"]; 
+
+            if (!senderStack || !receiverStack) {
+                console.warn("Sender/Receiver stack for animation not found.");
+                return;
+            }
+
+            senderStack.innerHTML = ''; 
+            receiverStack.innerHTML = ''; 
+
+            layers.forEach(layer => {
+                const senderBox = document.createElement('div');
+                senderBox.classList.add('layer-box');
+                senderBox.textContent = layer;
+                senderBox.style.borderColor = getLayerColor(layer);
+                senderStack.appendChild(senderBox);
+
+                const receiverBox = document.createElement('div');
+                receiverBox.classList.add('layer-box');
+                receiverBox.textContent = layer;
+                receiverBox.style.borderColor = getLayerColor(layer);
+                receiverStack.appendChild(receiverBox);
+            });
+            console.log("Data flow animation layers setup.");
+        }
+
+        function getLayerColor(layerName) {
+            const colors = {
+                "App": "#ea580c", "Pres": "#ca8a04", "Sess": "#65a30d",
+                "Trans": "#059669", "Net": "#0891b2", "Data": "#0284c7", "Phys": "#4f46e5"
+            };
+            return colors[layerName] || "#6b7280";
+        }
+
+        async function playDataFlowAnimation() {
+            console.log("Playing data flow animation.");
+            const packetSender = document.getElementById('packet-sender');
+            const packetReceiver = document.getElementById('packet-receiver');
+            const container = document.getElementById('data-flow-animation-container');
+            if (!packetSender || !packetReceiver || !container) {
+                console.error("Animation elements not found.");
+                return;
+            }
+
+            const playButton = document.getElementById('play-animation-button');
+            if(playButton) playButton.disabled = true;
+
+            const containerRect = container.getBoundingClientRect();
+            const initialTop = 10; 
+            const finalTop = containerRect.height - packetSender.offsetHeight - 10; 
+            const senderX = containerRect.width * 0.25 - (packetSender.offsetWidth / 2); 
+            const receiverX = containerRect.width * 0.75 - (packetReceiver.offsetWidth / 2); 
+
+            packetSender.style.opacity = '1';
+            packetReceiver.style.opacity = '0';
+            packetSender.style.top = `${initialTop}px`;
+            packetSender.style.left = `${senderX}px`;
+            packetReceiver.style.top = `${finalTop}px`;
+            packetReceiver.style.left = `${receiverX}px`;
+
+            packetSender.style.transition = 'top 2s ease-in-out, left 0.5s ease-in-out, opacity 0.5s ease-in-out';
+            packetSender.style.top = `${finalTop}px`;
+            console.log("Sender packet moving down.");
+
+            await new Promise(resolve => setTimeout(resolve, 2000)); 
+
+            packetSender.style.left = `${receiverX}px`;
+            console.log("Sender packet moving across.");
+            
+            await new Promise(resolve => setTimeout(resolve, 500)); 
+
+            packetSender.style.opacity = '0';
+            packetReceiver.style.opacity = '1';
+            packetReceiver.style.transition = 'top 2s ease-in-out, opacity 0.5s ease-in-out';
+            console.log("Receiver packet appearing.");
+            
+            packetReceiver.style.top = `${initialTop}px`;
+            console.log("Receiver packet moving up.");
+
+            await new Promise(resolve => setTimeout(resolve, 2000)); 
+            if(playButton) playButton.disabled = false;
+            console.log("Data flow animation finished.");
+        }
+
+        prevButton.addEventListener('click', () => {
+            if (currentSlideIndex > 0) {
+                showSlide(currentSlideIndex - 1);
+            }
+        });
+
+        nextButton.addEventListener('click', () => {
+            if (currentSlideIndex < slidesData.length - 1) {
+                showSlide(currentSlideIndex + 1);
+            }
+        });
+
+        // --- クイズ開始 ---
+        // DOMが完全に読み込まれてから初期化処理を実行する
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initSlideshow);
+        } else {
+            initSlideshow(); // 既に読み込み完了の場合
+        }
+
+    </script>
+</body>
+</html>
